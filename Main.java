@@ -46,8 +46,9 @@ class Map
 		}
 	}
 	
-	public HashMap<String, Point> getGrille() {
-		return grille;
+	public int getSize()
+	{
+		return taille;
 	}
 	
 	public void showGrille()
@@ -113,7 +114,9 @@ class IA
 {
 	public void play(Map grille)
 	{
-		grille.setPoint(1, 1, 2);
+		OneCase a = new OneCase(grille, 2, 2);
+		System.out.println(a.getScore());
+		grille.setPoint(2, 2, 2);
 	}
 }
 
@@ -137,7 +140,7 @@ class OneCase
 	
 	private int calculScore()
 	{
-		int score = 0;
+		int score = 0, taille = grille.getSize();
 		boolean full_line = true;
 		for (int x = 1; x <= 3 && full_line; x++)
 			if (x != this.x)
@@ -148,12 +151,21 @@ class OneCase
 			if (y != this.y)
 				if ( grille.getPoint(this.x, y) == 1 )
 					full_line = false;
-		if ( this.x == this.y || (grille.getSize() - this.x + 1) == this.y ) // nous somme sur une diagonale
+		if(full_line){score++;}else{full_line = true;};
+		if ( this.x == this.y ) // nous somme sur une diagonale
 		{
+			for (int xy = 1; xy <= 3 && full_line; xy++)
+				if (xy != this.x && xy != this.y)
+					if ( grille.getPoint(xy, xy) == 1 )
+						full_line = false;
 			if(full_line){score++;}else{full_line = true;};
-			
-			if(full_line){score++;}else{full_line = true;};
-			
+		}
+		if ( taille - this.x + 1 == this.y ) // nous somme sur l'autre diagonale
+		{
+			for (int x = taille; x > 0 && full_line; x--)
+				if (x != this.x && (taille - x + 1) != this.y)
+					if ( grille.getPoint(x, (taille - x + 1)) == 1 )
+						full_line = false;
 			if(full_line){score++;};
 		}
 		return score;
