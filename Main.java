@@ -34,9 +34,9 @@ class Map
 		fileGrille();
 	}
 	
-	public HashMap<String, Point> getHashMap()
+	public Set<String> AllKey()
 	{
-		return grille;
+		return grille.keySet();
 	}
 	
 	private void fileGrille()
@@ -79,9 +79,9 @@ class Map
 		grille.get("(" + x + ";" + y + ")").setValue(b);
 	}
 	
-	public int getPoint(int x, int y)
+	public Point getPoint(String key)
 	{
-		return grille.get("(" + x + ";" + y + ")").getValue();
+		return grille.get(key);
 	}
 }
 
@@ -130,11 +130,11 @@ class IA
 		this.grille = grille;
 		
 		// Pour tout les coups possibles
-		for ( String i : grille.getHashMap().keySet() )
+		for ( String i : grille.AllKey() )
 		{
-			if ( grille.getHashMap().get(i).getValue() == 0 )
+			if ( grille.getPoint(i).getValue() == 0 )
 			{
-				int x = grille.getHashMap().get(i).getX(), y = grille.getHashMap().get(i).getY();
+				int x = grille.getPoint(i).getX(), y = grille.getPoint(i).getY();
 				grille.setPoint(x, y, 1);
 				
 				int val = Min(etat_du_jeu, profondeur);
@@ -162,11 +162,11 @@ class IA
 		int min_val = 1000;
 		
 		// Pour tout les coups possibles
-		for ( String i : grille.getHashMap().keySet() )
+		for ( String i : grille.AllKey() )
 		{
-			if ( grille.getHashMap().get(i).getValue() == 0 )
+			if ( grille.getPoint(i).getValue() == 0 )
 			{
-				int x = grille.getHashMap().get(i).getX(), y = grille.getHashMap().get(i).getY();
+				int x = grille.getPoint(i).getX(), y = grille.getPoint(i).getY();
 				grille.setPoint(x, y, 1);
 				
 				int val = Max(etat_du_jeu, profondeur-1);
@@ -191,11 +191,11 @@ class IA
 		int max_val = -1000;
 		
 		// Pour tout les coups possibles
-		for ( String i : grille.getHashMap().keySet() )
+		for ( String i : grille.AllKey() )
 		{
-			if ( grille.getHashMap().get(i).getValue() == 0 )
+			if ( grille.getPoint(i).getValue() == 0 )
 			{
-				int x = grille.getHashMap().get(i).getX(), y = grille.getHashMap().get(i).getY();
+				int x = grille.getPoint(i).getX(), y = grille.getPoint(i).getY();
 				grille.setPoint(x, y, 1);
 				
 				int val = Min(etat_du_jeu, profondeur-1);
@@ -231,12 +231,12 @@ class IA
 				// lignes
 				for (int x = 1; x <= grille.getSize(); x++)
 				{
-					if ( grille.getPoint(this.x, y) == 1 )
+					if ( grille.getPoint("(" + x + ";" + i + ")").getValue() == 1 )
 				}
 				// colonnes
 				for (int y = 1; y <= grille.getSize(); y++)
 				{
-					if ( grille.getPoint(this.x, y) == 1 )
+					if ( grille.getPoint("(" + i + ";" + y + ")").getValue() == 1 )
 				}
 			}
 			// 1ere diago
