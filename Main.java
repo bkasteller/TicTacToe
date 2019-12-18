@@ -11,13 +11,13 @@ class Player
 		IA ia = new IA();
 		grille.showGrille();
 		while (true) {
+			ia.play(grille);
+			grille.showGrille();
 			System.out.println("Entrez x : ");
 			int x = in.nextInt();
 			System.out.println("Entrez y : ");
 			int y = in.nextInt();
-			grille.setPoint(x, y, 1);
-			grille.showGrille();
-			ia.play(grille);
+			grille.setPoint(x, y, 2);
 			grille.showGrille();
 		}
 	}
@@ -32,6 +32,11 @@ class Map
 	{
 		this.taille = taille;
 		fileGrille();
+	}
+	
+	public HashMap<String, Point> getHashMap()
+	{
+		return grille;
 	}
 	
 	private void fileGrille()
@@ -62,6 +67,11 @@ class Map
 			System.out.println();
 		}
 		System.out.println();
+	}
+	
+	public void resetPoint(int x, int y)
+	{
+		grille.get("(" + x + ";" + y + ")").setValue(0);
 	}
 	
 	public void setPoint(int x, int y, int b)
@@ -112,68 +122,134 @@ class Point
 
 class IA
 {
+	private int max_val = -1000, x, y, profondeur = 9;
+	private Map grille;
+	
 	public void play(Map grille)
 	{
-		OneCase a = new OneCase(grille, 2, 2, 2);
-		System.out.println(a.getScore());
-		grille.setPoint(2, 2, 2);
-	}
-}
-
-class OneCase
-{	
-	private Map grille;
-	private int score, x, y, player;
-	
-	public OneCase(Map grille, int x, int y, int player) 
-	{
 		this.grille = grille;
-		this.x = x;
-		this.y = y;
-		this.player = player;
+		
+		// Pour tout les coups possibles
+		for ( String i : grille.getHashMap().keySet() )
+		{
+			if ( grille.getHashMap().get(i).getValue() == 0 )
+			{
+				int x = grille.getHashMap().get(i).getX(), y = grille.getHashMap().get(i).getY();
+				grille.setPoint(x, y, 1);
+				
+				int val = Min(etat_du_jeu, profondeur);
+				
+				if ( val > max_val)
+				{
+					max_val = val;
+					this.x = x;
+					this.y = y;
+				}
+				
+				grille.resetPoint(x, y);
+			}
+		}
 		
 		
-		
-		
-		
-		this.score = calculScore();
+		grille.setPoint(x, y, 1);
 	}
 	
-	public int getScore()
+	private int Min(int etat_du_jeu, int profondeur)
 	{
-		return score;
+		if ( profondeur == 0 || FinJeu() )
+			return Eval(etat_du_jeu);
+		
+		int min_val = 1000;
+		
+		// Pour tout les coups possibles
+		for ( String i : grille.getHashMap().keySet() )
+		{
+			if ( grille.getHashMap().get(i).getValue() == 0 )
+			{
+				int x = grille.getHashMap().get(i).getX(), y = grille.getHashMap().get(i).getY();
+				grille.setPoint(x, y, 1);
+				
+				int val = Max(etat_du_jeu, profondeur-1);
+				
+				if ( val < min_val)
+				{
+					min_val = val;
+				}
+				
+				grille.resetPoint(x, y);
+			}
+		}
+		
+		return min_val;
 	}
 	
-	private int calculScore()
+	private int Max(int etat_du_jeu, int profondeur)
 	{
-		int score = 0, taille = grille.getSize();
-		boolean full_line = true;
-		for (int x = 1; x <= 3 && full_line; x++)
-			if (x != this.x)
-				if ( grille.getPoint(x, this.y) == player )
-					full_line = false;
-		if(full_line){score++;}else{full_line = true;};
-		for (int y = 1; y <= 3 && full_line; y++)
-			if (y != this.y)
-				if ( grille.getPoint(this.x, y) == player )
-					full_line = false;
-		if(full_line){score++;}else{full_line = true;};
-		if ( this.x == this.y ) // nous somme sur une diagonale
+		if ( profondeur == 0 || FinJeu() )
+			return Eval(etat_du_jeu);
+		
+		int max_val = -1000;
+		
+		// Pour tout les coups possibles
+		for ( String i : grille.getHashMap().keySet() )
 		{
-			for (int xy = 1; xy <= 3 && full_line; xy++)
-				if (xy != this.x && xy != this.y)
-					if ( grille.getPoint(xy, xy) == player )
-						full_line = false;
-			if(full_line){score++;}else{full_line = true;};
+			if ( grille.getHashMap().get(i).getValue() == 0 )
+			{
+				int x = grille.getHashMap().get(i).getX(), y = grille.getHashMap().get(i).getY();
+				grille.setPoint(x, y, 1);
+				
+				int val = Min(etat_du_jeu, profondeur-1);
+				
+				if ( val > max_val)
+				{
+					max_val = val;
+				}
+				
+				grille.resetPoint(x, y);
+			}
 		}
-		if ( taille - this.x + 1 == this.y ) // nous somme sur l'autre diagonale
-		{
-			for (int x = taille; x > 0 && full_line; x--)
-				if (x != this.x && (taille - x + 1) != this.y)
-					if ( grille.getPoint(x, (taille - x + 1)) == player )
-						full_line = false;
-			if(full_line){score++;};
-		}
+		
+		return max_val;
+	}
+	
+	private boolean FinJeu()
+	{
+		
+		return false;
+	}
+	
+	private int Eval(int etat_du_jeu)
+	{
+		int score = 0;
+		// si on a été appelé car la partie est finie 
+		//if ( FinJeu() ) 
+		
+		//else
+		//{
+			for (int i = 1; i <= grille.getSize(); i++)
+			{
+				// lignes
+				for (int x = 1; x <= grille.getSize(); x++)
+				{
+					if ( grille.getPoint(this.x, y) == 1 )
+				}
+				// colonnes
+				for (int y = 1; y <= grille.getSize(); y++)
+				{
+					if ( grille.getPoint(this.x, y) == 1 )
+				}
+			}
+			// 1ere diago
+			for (int xy = 1; xy <= grille.getSize(); xy++)
+			{
+				if ( grille.getPoint(xy, xy) == 1 )
+			}
+			// 2nd diago
+			for (int xy = grille.getSize(); xy > 0; xy--)
+			{
+				if ( grille.getPoint(x, (taille - x + 1)) == 1 )
+			}
+		//}
 		return score;
 	}
 }
