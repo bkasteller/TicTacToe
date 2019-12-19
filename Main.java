@@ -10,14 +10,17 @@ class Player
 		Map grille = new Map(3);
 		IA ia = new IA();
 		grille.showGrille();
-		while (true) {
-			ia.play(grille);
-			grille.showGrille();
+		while ( !grille.FinJeu() ) {
 			System.out.println("Entrez x : ");
 			int x = in.nextInt();
 			System.out.println("Entrez y : ");
 			int y = in.nextInt();
-			grille.setPoint(x, y, 2);
+			if ( x != -1 && y != -1 )
+			{
+				grille.setPoint(x, y, 2);
+				grille.showGrille();
+			}
+			ia.play(grille);
 			grille.showGrille();
 		}
 	}
@@ -83,6 +86,89 @@ class Map
 	{
 		return grille.get(key);
 	}
+	
+	public boolean FinJeu()
+	{
+		// Vérifie qu'il n'y a pas de suite de 3
+		for (int i = 1; i <= getSize(); i++)
+		{
+			if ( CalcRow(i) || CalcCol(i) )
+				return true;
+		}
+		if ( CalcDiago1() || CalcDiago2() )
+			return true;
+		
+		// Vérifie si il reste des cases vides
+		for ( String i : AllKey() )
+			if ( getPoint(i).getValue() == 0 )
+				return false;
+		return true;
+	}
+	
+	private boolean CalcRow(int numLigne)
+	{
+		int ai = 0, joueur = 0;
+		for (int x = 1; x <= getSize(); x++)
+		{
+			int value = getPoint("(" + x + ";" + numLigne + ")").getValue();
+			if ( value == 1 )
+				ai++;
+			else if ( value == 2 )
+				joueur++;
+		}
+		return Result(ai, joueur);
+	}
+	
+	private boolean CalcCol(int numCol)
+	{
+		int ai = 0, joueur = 0;
+		for (int y = 1; y <= getSize(); y++)
+		{
+			int value = getPoint("(" + numCol + ";" + y + ")").getValue();
+			if ( value == 1 )
+				ai++;
+			else if ( value == 2 )
+				joueur++;
+		}
+		return Result(ai, joueur);
+	}
+	
+	private boolean CalcDiago1()
+	{
+		int ai = 0, joueur = 0;
+		for (int xy = 1; xy <= getSize(); xy++)
+		{
+			int value = getPoint("(" + xy + ";" + xy + ")").getValue();
+			if ( value == 1 )
+				ai++;
+			else if ( value == 2 )
+				joueur++;
+		}
+		return Result(ai, joueur);
+	}
+	
+	private boolean CalcDiago2()
+	{
+		int ai = 0, joueur = 0;
+		for (int xy = getSize(); xy > 0; xy--)
+		{
+			int value = getPoint("(" + xy + ";" + (getSize() - xy + 1) + ")").getValue();
+			if ( value == 1 )
+				ai++;
+			else if ( value == 2 )
+				joueur++;
+		}
+		return Result(ai, joueur);
+	}
+	
+	private boolean Result(int ai, int joueur)
+	{
+		if ( ai == 3 )
+			return true;
+		if ( joueur == 3 )
+			return true;				
+		return false;
+	}
 }
 
 class Point 
@@ -137,9 +223,9 @@ class IA
 				int x = grille.getPoint(i).getX(), y = grille.getPoint(i).getY();
 				grille.setPoint(x, y, 1);
 				
-				int val = Min(etat_du_jeu, profondeur);
+				int val = Min(profondeur);
 				
-				if ( val > max_val)
+				if ( val >= max_val)
 				{
 					max_val = val;
 					this.x = x;
@@ -151,13 +237,13 @@ class IA
 		}
 		
 		
-		grille.setPoint(x, y, 1);
+		grille.setPoint(this.x, this.y, 1);
 	}
 	
-	private int Min(int etat_du_jeu, int profondeur)
+	private int Min(int profondeur)
 	{
-		if ( profondeur == 0 || FinJeu() )
-			return Eval(etat_du_jeu);
+		if ( profondeur == 0 || grille.FinJeu() )
+			return Eval();
 		
 		int min_val = 1000;
 		
@@ -167,9 +253,9 @@ class IA
 			if ( grille.getPoint(i).getValue() == 0 )
 			{
 				int x = grille.getPoint(i).getX(), y = grille.getPoint(i).getY();
-				grille.setPoint(x, y, 1);
+				grille.setPoint(x, y, 2);
 				
-				int val = Max(etat_du_jeu, profondeur-1);
+				int val = Max(profondeur-1);
 				
 				if ( val < min_val)
 				{
@@ -183,10 +269,10 @@ class IA
 		return min_val;
 	}
 	
-	private int Max(int etat_du_jeu, int profondeur)
+	private int Max(int profondeur)
 	{
-		if ( profondeur == 0 || FinJeu() )
-			return Eval(etat_du_jeu);
+		if ( profondeur == 0 || grille.FinJeu() )
+			return Eval();
 		
 		int max_val = -1000;
 		
@@ -198,7 +284,7 @@ class IA
 				int x = grille.getPoint(i).getX(), y = grille.getPoint(i).getY();
 				grille.setPoint(x, y, 1);
 				
-				int val = Min(etat_du_jeu, profondeur-1);
+				int val = Min(profondeur-1);
 				
 				if ( val > max_val)
 				{
@@ -212,44 +298,90 @@ class IA
 		return max_val;
 	}
 	
-	private boolean FinJeu()
-	{
-		
-		return false;
-	}
-	
-	private int Eval(int etat_du_jeu)
+	private int Eval()
 	{
 		int score = 0;
-		// si on a été appelé car la partie est finie 
-		//if ( FinJeu() ) 
 		
-		//else
-		//{
-			for (int i = 1; i <= grille.getSize(); i++)
-			{
-				// lignes
-				for (int x = 1; x <= grille.getSize(); x++)
-				{
-					if ( grille.getPoint("(" + x + ";" + i + ")").getValue() == 1 )
-				}
-				// colonnes
-				for (int y = 1; y <= grille.getSize(); y++)
-				{
-					if ( grille.getPoint("(" + i + ";" + y + ")").getValue() == 1 )
-				}
-			}
-			// 1ere diago
-			for (int xy = 1; xy <= grille.getSize(); xy++)
-			{
-				if ( grille.getPoint(xy, xy) == 1 )
-			}
-			// 2nd diago
-			for (int xy = grille.getSize(); xy > 0; xy--)
-			{
-				if ( grille.getPoint(x, (taille - x + 1)) == 1 )
-			}
-		//}
+		for (int i = 1; i <= grille.getSize(); i++)
+		{
+			score += CalcRow(i);
+			score += CalcCol(i);
+		}
+		score += CalcDiago1();
+		score += CalcDiago2();
+		
+		if ( grille.FinJeu() && score > -1000 && score < 1000 )
+			return 0;
+
 		return score;
+	}
+	
+	private int CalcRow(int numLigne)
+	{
+		int ai = 0, joueur = 0;
+		for (int x = 1; x <= grille.getSize(); x++)
+		{
+			int value = grille.getPoint("(" + x + ";" + numLigne + ")").getValue();
+			if ( value == 1 )
+				ai++;
+			else if ( value == 2 )
+				joueur++;
+		}
+		return Worth(ai, joueur);
+	}
+	
+	private int CalcCol(int numCol)
+	{
+		int ai = 0, joueur = 0;
+		for (int y = 1; y <= grille.getSize(); y++)
+		{
+			int value = grille.getPoint("(" + numCol + ";" + y + ")").getValue();
+			if ( value == 1 )
+				ai++;
+			else if ( value == 2 )
+				joueur++;
+		}
+		return Worth(ai, joueur);
+	}
+	
+	private int CalcDiago1()
+	{
+		int ai = 0, joueur = 0;
+		for (int xy = 1; xy <= grille.getSize(); xy++)
+		{
+			int value = grille.getPoint("(" + xy + ";" + xy + ")").getValue();
+			if ( value == 1 )
+				ai++;
+			else if ( value == 2 )
+				joueur++;
+		}
+		return Worth(ai, joueur);
+	}
+	
+	private int CalcDiago2()
+	{
+		int ai = 0, joueur = 0;
+		for (int xy = grille.getSize(); xy > 0; xy--)
+		{
+			int value = grille.getPoint("(" + xy + ";" + (grille.getSize() - xy + 1) + ")").getValue();
+			if ( value == 1 )
+				ai++;
+			else if ( value == 2 )
+				joueur++;
+		}
+		return Worth(ai, joueur);
+	}
+	
+	private int Worth(int ai, int joueur)
+	{
+		if ( ai == 3 )
+			return 1000;
+		if ( joueur == 3 )
+			return -1000;
+		if ( ai == 2 && joueur == 0 )
+			return 1;
+		if ( joueur == 2 && ai == 0 )
+			return -1;
+		return 0;
 	}
 }
