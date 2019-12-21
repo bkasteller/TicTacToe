@@ -7,27 +7,15 @@ class Player
 	public static void main(String args[]) 
 	{
 		Scanner in = new Scanner(System.in);
-		//Grille grille = new Grille();
-		MegaGrille megaGrille = new MegaGrille();
-		String key;
+		Grille grille = new Grille();
 		IA robot = new IA();
-		while ( true/*!grille.FinPartie()*/ ) {
-			//grille.Afficher();
-			megaGrille.Afficher();
+		while ( !grille.FinPartie() ) {
+			robot.Jouer(grille);
+			grille.Afficher();
 			System.out.print("Entrez x et y : ");
 			int x = in.nextInt();
 			int y = in.nextInt();
-			
-			if ( x != -1 )
-			{
-				key = "("+(x/3)+";"+(y/3)+")";
-				megaGrille.GetGrille(key).Jouer(x-1, y-1, megaGrille.GetGrille(key).Joueur());
-				key = "("+(x/3)+";"+(y/3)+")";
-				robot.Jouer(megaGrille, key);
-			}else
-			{
-				robot.Jouer(megaGrille, "(1;1)");
-			}
+			grille.Jouer(x-1, y-1, grille.Joueur());
 		}
 	}
 }
@@ -221,82 +209,17 @@ class Grille
 	}
 }
 
-class MegaGrille 
-{
-	private int taille = 3;
-	private String key;
-	private HashMap<String, Grille> megaGrille = new HashMap<String, Grille>();
-	
-	public MegaGrille()
-	{
-		Remplir();
-	}
-	
-	private void Remplir()
-	{
-		for (int y = 0; y < taille; y++)
-			for (int x = 0; x < taille; x++)
-				megaGrille.put("("+x+";"+y+")", new Grille());
-	}
-	
-	public void Afficher()
-	{
-		for (int y = 0; y < taille*taille; y++)
-		{
-			for (int x = 0; x < taille*taille; x++)
-			{
-				GetGrille(x, y).Afficher(x%3, y%3);
-			}
-			System.out.println();
-		}
-	}
-	
-	public Set<String> Key()
-	{
-		return megaGrille.keySet();
-	}
-	
-	public Grille GetGrille(int x, int y)
-	{
-		this.key = "("+x/taille+";"+y/taille+")";
-		return megaGrille.get("("+x/taille+";"+y/taille+")");
-	}
-	
-	public Grille GetGrille(String key)
-	{
-		return megaGrille.get(key);
-	}
-	
-	public int GetX()
-	{
-		return Character.getNumericValue(key.charAt(1))-1;
-	}
-	
-	public int GetY()
-	{
-		return Character.getNumericValue(key.charAt(3))-1;
-	}
-}
-
 class IA
 {
 	Grille grille;
-	private int max_val = -1000, x, y, profondeur = 6/*9*/;
+	private int max_val = -1000, x, y, profondeur = 5/*9*/;
 	
 	public void Jouer(Grille grille)
 	{
 		this.grille = grille;
 		Reflechir();
 		grille.Jouer(x, y, grille.Robot());
-		System.out.println(x+" "+y);
-	}
-	
-	public void Jouer(MegaGrille megaGrille, String key)
-	{
-		this.grille = megaGrille.GetGrille(key);
-		Reflechir();
-		grille.Jouer(x, y, grille.Robot());
-		System.out.println((megaGrille.GetX()*3+x)+" "+(megaGrille.GetY()*3+y));
+		//System.out.println(x+" "+y);
 	}
 	
 	private void Reflechir()
