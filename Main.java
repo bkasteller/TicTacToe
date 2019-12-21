@@ -1,22 +1,26 @@
 import java.util.*;
-import java.io.*;
-import java.math.*;
+//import java.io.*;
+//import java.math.*;
 
 class Player
 {
 	public static void main(String args[]) 
 	{
 		Scanner in = new Scanner(System.in);
-		Grille grille = new Grille();
+		//Grille grille = new Grille();
+		MegaGrille megaGrille = new MegaGrille();
+		Grille grille = megaGrille.GetGrille(1, 1);
 		IA robot = new IA();
-		while ( !grille.FinPartie() ) {
-			robot.Jouer(grille);
-			grille.AfficherGrille();
+		while ( true/*!grille.FinPartie()*/ ) {
+			robot.Jouer(megaGrille, grille);
+			//grille.Afficher();
+			megaGrille.Afficher();
 			System.out.println("Entrez x : ");
-			int x = in.nextInt();
+			int x = in.nextInt();/*
 			System.out.println("Entrez y : ");
 			int y = in.nextInt();
-			grille.Jouer(x-1, y-1, grille.Joueur());
+			grille = megaGrille.GetGrille(x-1, y-1);
+			grille.Jouer(x-1, y-1, grille.Joueur());*/
 		}
 	}
 }
@@ -89,18 +93,28 @@ class Grille
 		return taille;
 	}
 	
-	public void AfficherGrille()
+	public void Afficher()
 	{
 		for (int y = 0; y < taille; y++)
 		{
 			for (int x = 0; x < taille; x++)
 			{
 				int val = grille.get("("+x+";"+y+")").GetVal();
-				System.out.print(val == 0 ? "." : val == Joueur() ? "j" : "r");
+				System.out.print(val == 0 ? "." : val == Joueur() ? "x" : "o");
 			}
 			System.out.println();
 		}
 		System.out.println();
+	}
+	
+	public void Afficher(int y)
+	{
+		for (int x = 0; x < taille; x++)
+		{
+			int val = grille.get("("+x+";"+y+")").GetVal();
+			System.out.print(val == 0 ? "." : val == Joueur() ? "x" : "o");
+		}
+		System.out.print(" ");
 	}
 	
 	public void Annuler(int x, int y)
@@ -204,17 +218,75 @@ class Grille
 	}
 }
 
+class MegaGrille 
+{
+	private int taille = 3, x, y;
+	private HashMap<String, Grille> megaGrille = new HashMap<String, Grille>();
+	
+	public MegaGrille()
+	{
+		Remplir();
+	}
+	
+	private void Remplir()
+	{
+		for (int y = 0; y < taille; y++)
+			for (int x = 0; x < taille; x++)
+				megaGrille.put("("+x+";"+y+")", new Grille());
+	}
+	
+	public void Afficher()
+	{
+		for (int y = 0; y < taille*taille; y++)
+		{
+			for (int x = 0; x < taille; x++)
+				GetGrille(x*taille, y).Afficher(x);
+			System.out.println();
+		}
+	}
+	
+	public Set<String> Key()
+	{
+		return megaGrille.keySet();
+	}
+	
+	public Grille GetGrille(int x, int y)
+	{
+		this.x = x;
+		this.y = y;
+		return megaGrille.get("("+x/taille+";"+y/taille+")");
+	}
+	
+	public int GetX()
+	{
+		return x;
+	}
+	
+	public int GetY()
+	{
+		return y;
+	}
+}
+
 class IA
 {
 	Grille grille;
-	private int max_val = -1000, x, y, profondeur = 9;
+	private int max_val = -1000, x, y, profondeur = 5/*9*/;
 	
 	public void Jouer(Grille grille)
 	{
 		this.grille = grille;
 		Reflechir();
-		grille.Jouer(x, y, 2);
-		System.out.println(x+" "+y);
+		grille.Jouer(x, y, grille.Robot());
+		//System.out.println(x+" "+y);
+	}
+	
+	public void Jouer(MegaGrille megaGrille, Grille grille)
+	{
+		this.grille = grille;
+		Reflechir();
+		grille.Jouer(x, y, grille.Robot());
+		
 	}
 	
 	private void Reflechir()
@@ -326,8 +398,4 @@ class IA
 			score -= 1000;
 		return score;
 	}
-}
-}
-}
-}
 }
