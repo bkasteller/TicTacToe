@@ -9,19 +9,25 @@ class Player
 		Scanner in = new Scanner(System.in);
 		//Grille grille = new Grille();
 		MegaGrille megaGrille = new MegaGrille();
-		Grille grille;
+		String key;
 		IA robot = new IA();
 		while ( true/*!grille.FinPartie()*/ ) {
-			robot.Jouer(megaGrille, "(4;4)");
 			//grille.Afficher();
 			megaGrille.Afficher();
-			System.out.println("Entrez x : ");
+			System.out.print("Entrez x et y : ");
 			int x = in.nextInt();
-			System.out.println("Entrez y : ");
 			int y = in.nextInt();
-			grille = megaGrille.GetGrille(x-1, y-1);
-			grille.Jouer(x-1, y-1, grille.Joueur());
-			grille = megaGrille.GetGrille("("+(x/3)+";"+(y/3)+")");
+			
+			if ( x != -1 )
+			{
+				key = "("+(x/3)+";"+(y/3)+")";
+				megaGrille.GetGrille(key).Jouer(x-1, y-1, megaGrille.GetGrille(key).Joueur());
+				key = "("+(x/3)+";"+(y/3)+")";
+				robot.Jouer(megaGrille, key);
+			}else
+			{
+				robot.Jouer(megaGrille, "(1;1)");
+			}
 		}
 	}
 }
@@ -263,19 +269,19 @@ class MegaGrille
 	
 	public int GetX()
 	{
-		return 1;
+		return Character.getNumericValue(key.charAt(1))-1;
 	}
 	
 	public int GetY()
 	{
-		return 1;
+		return Character.getNumericValue(key.charAt(3))-1;
 	}
 }
 
 class IA
 {
 	Grille grille;
-	private int max_val = -1000, x, y, profondeur = 3/*9*/;
+	private int max_val = -1000, x, y, profondeur = 6/*9*/;
 	
 	public void Jouer(Grille grille)
 	{
