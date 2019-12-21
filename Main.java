@@ -197,11 +197,6 @@ class MegaGrille
 		Remplir();
 	}
 	
-	public String Coord()
-	{
-		return x+" "+y;
-	}
-	
 	private void Remplir()
 	{
 		for (int y = 0; y < taille; y++)
@@ -228,8 +223,8 @@ class MegaGrille
 	
 	public Grille GetGrille(int x, int y)
 	{
-		this.x = x;
-		this.y = y;
+		this.x = x/taille;
+		this.y = y/taille;
 		return megaGrille.get("("+x/taille+";"+y/taille+")");
 	}
 	
@@ -254,7 +249,7 @@ class IA
 		this.grille = grille;
 		Reflechir();
 		grille.Jouer(x, y, grille.Robot());
-		//System.out.println(x+" "+y);
+		System.out.println(x+" "+y);
 	}
 	
 	public void Jouer(MegaGrille megaGrille, Grille grille)
@@ -262,7 +257,7 @@ class IA
 		this.grille = grille;
 		Reflechir();
 		grille.Jouer(x, y, grille.Robot());
-		System.out.println(megaGrille.Coord()+" : "+x+" "+y);
+		System.out.println((megaGrille.GetX()*3+x)+" "+(megaGrille.GetY()*3+y));
 	}
 	
 	private void Reflechir()
