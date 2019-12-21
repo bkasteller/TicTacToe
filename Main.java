@@ -1,30 +1,3 @@
-import java.util.*;
-//import java.io.*;
-//import java.math.*;
-
-class Player
-{
-	public static void main(String args[]) 
-	{
-		Scanner in = new Scanner(System.in);
-		//Grille grille = new Grille();
-		MegaGrille megaGrille = new MegaGrille();
-		Grille grille = megaGrille.GetGrille(1, 1);
-		IA robot = new IA();
-		while ( true/*!grille.FinPartie()*/ ) {
-			robot.Jouer(megaGrille, grille);
-			//grille.Afficher();
-			megaGrille.Afficher();
-			System.out.println("Entrez x : ");
-			int x = in.nextInt();/*
-			System.out.println("Entrez y : ");
-			int y = in.nextInt();
-			grille = megaGrille.GetGrille(x-1, y-1);
-			grille.Jouer(x-1, y-1, grille.Joueur());*/
-		}
-	}
-}
-
 class Case
 {
 	private int x, y, val = 0;
@@ -107,14 +80,10 @@ class Grille
 		System.out.println();
 	}
 	
-	public void Afficher(int y)
+	public void Afficher(int x, int y)
 	{
-		for (int x = 0; x < taille; x++)
-		{
-			int val = grille.get("("+x+";"+y+")").GetVal();
-			System.out.print(val == 0 ? "." : val == Joueur() ? "x" : "o");
-		}
-		System.out.print(" ");
+		int val = grille.get("("+x+";"+y+")").GetVal();
+		System.out.print(val == 0 ? "." : val == Joueur() ? "x" : "o");
 	}
 	
 	public void Annuler(int x, int y)
@@ -228,6 +197,11 @@ class MegaGrille
 		Remplir();
 	}
 	
+	public String Coord()
+	{
+		return x+" "+y;
+	}
+	
 	private void Remplir()
 	{
 		for (int y = 0; y < taille; y++)
@@ -239,8 +213,10 @@ class MegaGrille
 	{
 		for (int y = 0; y < taille*taille; y++)
 		{
-			for (int x = 0; x < taille; x++)
-				GetGrille(x*taille, y).Afficher(x);
+			for (int x = 0; x < taille*taille; x++)
+			{
+				GetGrille(x, y).Afficher(x%3, y%3);
+			}
 			System.out.println();
 		}
 	}
@@ -286,7 +262,7 @@ class IA
 		this.grille = grille;
 		Reflechir();
 		grille.Jouer(x, y, grille.Robot());
-		
+		System.out.println(megaGrille.Coord()+" : "+x+" "+y);
 	}
 	
 	private void Reflechir()
@@ -362,7 +338,7 @@ class IA
 			else
 				score -= 1;
 			if ( grille.VerifLigne(i, 3) == grille.Robot() )
-				score += 1000;
+				score += 10000;
 			else if ( grille.VerifLigne(i, 3) == grille.Joueur() )
 				score -= 1000;
 			if ( grille.VerifCol(i, 2) == grille.Robot() )
@@ -372,7 +348,7 @@ class IA
 			else
 				score -= 1;
 			if ( grille.VerifCol(i, 3) == grille.Robot() )
-				score += 1000;
+				score += 10000;
 			else if ( grille.VerifCol(i, 3) == grille.Joueur() )
 				score -= 1000;
 		}
@@ -393,7 +369,7 @@ class IA
 		else
 			score -= 1;
 		if ( grille.VerifDiago2(3) == grille.Robot() )
-			score += 1000;
+			score += 10000;
 		else if ( grille.VerifDiago2(3) == grille.Joueur() )
 			score -= 1000;
 		return score;
