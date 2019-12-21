@@ -1,3 +1,31 @@
+import java.util.*;
+//import java.io.*;
+//import java.math.*;
+
+class Player
+{
+	public static void main(String args[]) 
+	{
+		Scanner in = new Scanner(System.in);
+		//Grille grille = new Grille();
+		MegaGrille megaGrille = new MegaGrille();
+		Grille grille;
+		IA robot = new IA();
+		while ( true/*!grille.FinPartie()*/ ) {
+			robot.Jouer(megaGrille, "(4;4)");
+			//grille.Afficher();
+			megaGrille.Afficher();
+			System.out.println("Entrez x : ");
+			int x = in.nextInt();
+			System.out.println("Entrez y : ");
+			int y = in.nextInt();
+			grille = megaGrille.GetGrille(x-1, y-1);
+			grille.Jouer(x-1, y-1, grille.Joueur());
+			grille = megaGrille.GetGrille("("+(x/3)+";"+(y/3)+")");
+		}
+	}
+}
+
 class Case
 {
 	private int x, y, val = 0;
@@ -189,7 +217,8 @@ class Grille
 
 class MegaGrille 
 {
-	private int taille = 3, x, y;
+	private int taille = 3;
+	private String key;
 	private HashMap<String, Grille> megaGrille = new HashMap<String, Grille>();
 	
 	public MegaGrille()
@@ -223,26 +252,30 @@ class MegaGrille
 	
 	public Grille GetGrille(int x, int y)
 	{
-		this.x = x/taille;
-		this.y = y/taille;
+		this.key = "("+x/taille+";"+y/taille+")";
 		return megaGrille.get("("+x/taille+";"+y/taille+")");
+	}
+	
+	public Grille GetGrille(String key)
+	{
+		return megaGrille.get(key);
 	}
 	
 	public int GetX()
 	{
-		return x;
+		return 1;
 	}
 	
 	public int GetY()
 	{
-		return y;
+		return 1;
 	}
 }
 
 class IA
 {
 	Grille grille;
-	private int max_val = -1000, x, y, profondeur = 5/*9*/;
+	private int max_val = -1000, x, y, profondeur = 3/*9*/;
 	
 	public void Jouer(Grille grille)
 	{
@@ -252,9 +285,9 @@ class IA
 		System.out.println(x+" "+y);
 	}
 	
-	public void Jouer(MegaGrille megaGrille, Grille grille)
+	public void Jouer(MegaGrille megaGrille, String key)
 	{
-		this.grille = grille;
+		this.grille = megaGrille.GetGrille(key);
 		Reflechir();
 		grille.Jouer(x, y, grille.Robot());
 		System.out.println((megaGrille.GetX()*3+x)+" "+(megaGrille.GetY()*3+y));
