@@ -102,12 +102,6 @@ class Grille
 		System.out.println();
 	}
 	
-	public void Afficher(int x, int y)
-	{
-		int val = grille.get("("+x+";"+y+")").GetVal();
-		System.out.print(val == 0 ? "." : val == Joueur() ? "x" : "o");
-	}
-	
 	public void Annuler(int x, int y)
 	{
 		grille.get("("+x+";"+y+")").SetVal(0);
