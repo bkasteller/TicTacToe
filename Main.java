@@ -9,13 +9,13 @@ class Player
 		Scanner in = new Scanner(System.in);
 		Grille grille = new Grille();
 		IA robot = new IA();
-		while ( !grille.FinPartie() ) {
-			robot.Jouer(grille);
-			grille.Afficher();
+		while ( !grille.finPartie() ) {
+			robot.jouer(grille);
+			grille.afficher();
 			System.out.print("Entrez x et y : ");
 			int x = in.nextInt();
 			int y = in.nextInt();
-			grille.Jouer(x-1, y-1, grille.Joueur());
+			grille.jouer(x-1, y-1, grille.joueur());
 		}
 	}
 }
@@ -30,22 +30,22 @@ class Case
 		this.y = y ;
 	}
 	
-	public int GetX()
+	public int getX()
 	{
 		return x;
 	}
 	
-	public int GetY()
+	public int getY()
 	{
 		return y;
 	}
 	
-	public int GetVal()
+	public int getVal()
 	{
 		return val;
 	}
 	
-	public void SetVal(int val)
+	public void setVal(int val)
 	{
 		this.val = val;
 	}
@@ -58,147 +58,147 @@ class Grille
 	
 	public Grille()
 	{
-		Remplir();
+		remplir();
 	}
 	
-	private void Remplir()
+	private void remplir()
 	{
 		for (int y = 0; y < taille; y++)
 			for (int x = 0; x < taille; x++)
 				grille.put("("+x+";"+y+")", new Case(x, y));
 	}
 	
-	public Set<String> Key()
+	public Set<String> key()
 	{
 		return grille.keySet();
 	}
 	
-	public int Joueur()
+	public int joueur()
 	{
 		return joueur;
 	}
 	
-	public int Robot()
+	public int robot()
 	{
 		return robot;
 	}
 	
-	public int GetTaille()
+	public int getTaille()
 	{
 		return taille;
 	}
 	
-	public void Afficher()
+	public void afficher()
 	{
 		for (int y = 0; y < taille; y++)
 		{
 			for (int x = 0; x < taille; x++)
 			{
-				int val = grille.get("("+x+";"+y+")").GetVal();
-				System.out.print(val == 0 ? "." : val == Joueur() ? "x" : "o");
+				int val = grille.get("("+x+";"+y+")").getVal();
+				System.out.print(val == 0 ? "." : val == joueur() ? "x" : "o");
 			}
 			System.out.println();
 		}
 		System.out.println();
 	}
 	
-	public void Annuler(int x, int y)
+	public void annuler(int x, int y)
 	{
-		grille.get("("+x+";"+y+")").SetVal(0);
+		grille.get("("+x+";"+y+")").setVal(0);
 	}
 	
-	public void Jouer(int x, int y, int player)
+	public void jouer(int x, int y, int player)
 	{
-		grille.get("("+x+";"+y+")").SetVal(player);
+		grille.get("("+x+";"+y+")").setVal(player);
 	}
 	
-	public Case GetCase(String key)
+	public Case getCase(String key)
 	{
 		return grille.get(key);
 	}
 	
-	public boolean FinPartie()
+	public boolean finPartie()
 	{
-		for (int i = 0; i < GetTaille(); i++)
-			if ( VerifLigne(i, 3) != 0 || VerifCol(i, 3) != 0 )
+		for (int i = 0; i < getTaille(); i++)
+			if ( verifLigne(i, 3) != 0 || verifCol(i, 3) != 0 )
 				return true;
-		if ( VerifDiago1(3) != 0 || VerifDiago2(3) != 0 )
+		if ( verifDiago1(3) != 0 || verifDiago2(3) != 0 )
 			return true;
-		for ( String i : Key() )
-			if ( GetCase(i).GetVal() == 0 )
+		for ( String i : key() )
+			if ( getCase(i).getVal() == 0 )
 				return false;
 		return true;
 	}
 	
-	public int VerifLigne(int y, int n)
+	public int verifLigne(int y, int n)
 	{
 		int robot = 0, joueur = 0;
-		for (int x = 0; x < GetTaille(); x++)
+		for (int x = 0; x < getTaille(); x++)
 		{
-			int val = GetCase("("+x+";"+y+")").GetVal();
-			if ( val == Joueur() )
+			int val = getCase("("+x+";"+y+")").getVal();
+			if ( val == joueur() )
 				joueur++;
-			else if ( val == Robot() )
+			else if ( val == robot() )
 				robot++;
 		}
 		if ( robot == n )
-			return Robot();
+			return robot();
 		if ( joueur == n )
-			return Joueur();
+			return joueur();
 		return 0;
 	}
 	
-	public int VerifCol(int x, int n)
+	public int verifCol(int x, int n)
 	{
 		int robot = 0, joueur = 0;
-		for (int y = 0; y < GetTaille(); y++)
+		for (int y = 0; y < getTaille(); y++)
 		{
-			int val = GetCase("("+x+";"+y+")").GetVal();
-			if ( val == Joueur() )
+			int val = getCase("("+x+";"+y+")").getVal();
+			if ( val == joueur() )
 				joueur++;
-			else if ( val == Robot() )
+			else if ( val == robot() )
 				robot++;
 		}
 		if ( robot == n )
-			return Robot();
+			return robot();
 		if ( joueur == n )
-			return Joueur();
+			return joueur();
 		return 0;
 	}
 	
-	public int VerifDiago1(int n)
+	public int verifDiago1(int n)
 	{
 		int robot = 0, joueur = 0;
-		for (int i = 0; i < GetTaille(); i++)
+		for (int i = 0; i < getTaille(); i++)
 		{
-			int val = GetCase("("+i+";"+i+")").GetVal();
-			if ( val == Joueur() )
+			int val = getCase("("+i+";"+i+")").getVal();
+			if ( val == joueur() )
 				joueur++;
-			else if ( val == Robot() )
+			else if ( val == robot() )
 				robot++;
 		}
 		if ( robot == n )
-			return Robot();
+			return robot();
 		if ( joueur == n )
-			return Joueur();
+			return joueur();
 		return 0;
 	}
 	
-	public int VerifDiago2(int n)
+	public int verifDiago2(int n)
 	{
 		int robot = 0, joueur = 0;
-		for (int i = 0; i < GetTaille(); i++)
+		for (int i = 0; i < getTaille(); i++)
 		{
-			int val = GetCase("("+i+";"+(GetTaille()-i-1)+")").GetVal();
-			if ( val == Joueur() )
+			int val = getCase("("+i+";"+(getTaille()-i-1)+")").getVal();
+			if ( val == joueur() )
 				joueur++;
-			else if ( val == Robot() )
+			else if ( val == robot() )
 				robot++;
 		}
 		if ( robot == n )
-			return Robot();
+			return robot();
 		if ( joueur == n )
-			return Joueur();
+			return joueur();
 		return 0;
 	}
 }
@@ -206,123 +206,107 @@ class Grille
 class IA
 {
 	Grille grille;
-	private int max_val = -1000, x, y, profondeur = 5/*9*/;
+	private int max_val = -1000, x, y, profondeur = 9;
 	
-	public void Jouer(Grille grille)
+	public void jouer(Grille grille)
 	{
 		this.grille = grille;
-		Reflechir();
-		grille.Jouer(x, y, grille.Robot());
+		reflechir();
+		grille.jouer(x, y, grille.robot());
 		//System.out.println(x+" "+y);
 	}
 	
-	private void Reflechir()
+	private void reflechir()
 	{
-		for ( String i : grille.Key() )
+		for ( String i : grille.key() )
 		{
-			if ( grille.GetCase(i).GetVal() == 0 )
+			if ( grille.getCase(i).getVal() == 0 )
 			{
-				int x = grille.GetCase(i).GetX(), y = grille.GetCase(i).GetY();
-				grille.Jouer(x, y, grille.Robot());
-				int val = Min(profondeur);
+				int x = grille.getCase(i).getX(), y = grille.getCase(i).getY();
+				grille.jouer(x, y, grille.robot());
+				int val = min(profondeur);
 				if ( val >= max_val)
 				{
 					max_val = val;
 					this.x = x;
 					this.y = y;
 				}
-				grille.Annuler(x, y);
+				grille.annuler(x, y);
 			}
 		}
 	}
 	
-	private int Min(int profondeur)
+	private int min(int profondeur)
 	{
-		if ( profondeur == 0 || grille.FinPartie() )
-			return Eval();
+		if ( profondeur == 0 || grille.finPartie() || eval() == -1000 || eval() == 1000 )
+			return eval();
 		int min_val = 1000;
-		for ( String i : grille.Key() )
+		for ( String i : grille.key() )
 		{
-			if ( grille.GetCase(i).GetVal() == 0 )
+			if ( grille.getCase(i).getVal() == 0 )
 			{
-				int x = grille.GetCase(i).GetX(), y = grille.GetCase(i).GetY();
-				grille.Jouer(x, y, grille.Joueur());
-				int val = Max(profondeur-1);
+				int x = grille.getCase(i).getX(), y = grille.getCase(i).getY();
+				grille.jouer(x, y, grille.joueur());
+				int val = max(profondeur-1);
 				if ( val < min_val)
 					min_val = val;
-				grille.Annuler(x, y);
+				grille.annuler(x, y);
 			}
 		}
 		return min_val;
 	}
 	
-	private int Max(int profondeur)
+	private int max(int profondeur)
 	{
-		if ( profondeur == 0 || grille.FinPartie() )
-			return Eval();
+		if ( profondeur == 0 || grille.finPartie() || eval() == -1000 || eval() == 1000 )
+			return eval();
 		int max_val = -1000;
-		for ( String i : grille.Key() )
+		for ( String i : grille.key() )
 		{
-			if ( grille.GetCase(i).GetVal() == 0 )
+			if ( grille.getCase(i).getVal() == 0 )
 			{
-				int x = grille.GetCase(i).GetX(), y = grille.GetCase(i).GetY();
-				grille.Jouer(x, y, grille.Robot());
-				int val = Min(profondeur-1);	
+				int x = grille.getCase(i).getX(), y = grille.getCase(i).getY();
+				grille.jouer(x, y, grille.robot());
+				int val = min(profondeur-1);	
 				if ( val > max_val)
 					max_val = val;	
-				grille.Annuler(x, y);
+				grille.annuler(x, y);
 			}
 		}
 		return max_val;
 	}
 	
-	private int Eval()
+	private int eval()
 	{
 		int score = 0;
 		
-		for (int i = 0; i < grille.GetTaille(); i++)
+		for (int i = 0; i < grille.getTaille(); i++)
 		{
-			if ( grille.VerifLigne(i, 2) == grille.Robot() )
+			if ( grille.verifLigne(i, 2) == grille.robot() || grille.verifCol(i, 2) == grille.robot() )
 				score += 2;
-			else if ( grille.VerifLigne(i, 2) == grille.Joueur() )
+			else if ( grille.verifLigne(i, 2) == grille.joueur() || grille.verifCol(i, 2) == grille.joueur() )
 				score -= 2;
 			else
 				score -= 1;
-			if ( grille.VerifLigne(i, 3) == grille.Robot() )
-				score += 10000;
-			else if ( grille.VerifLigne(i, 3) == grille.Joueur() )
-				score -= 1000;
-			if ( grille.VerifCol(i, 2) == grille.Robot() )
-				score += 2;
-			else if ( grille.VerifCol(i, 2) == grille.Joueur() )
-				score -= 2;
-			else
-				score -= 1;
-			if ( grille.VerifCol(i, 3) == grille.Robot() )
-				score += 10000;
-			else if ( grille.VerifCol(i, 3) == grille.Joueur() )
-				score -= 1000;
+			
+			if ( grille.verifLigne(i, 3) == grille.robot() || grille.verifCol(i, 3) == grille.robot() )
+				return 1000;
+			else if ( grille.verifLigne(i, 3) == grille.joueur() || grille.verifCol(i, 3) == grille.joueur() )
+				return -1000;
 		}
-		if ( grille.VerifDiago1(2) == grille.Robot() )
+		
+		if ( grille.verifDiago1(2) == grille.robot() || grille.verifDiago2(2) == grille.robot() )
 			score += 2;
-		else if ( grille.VerifDiago1(2) == grille.Joueur() )
+		else if ( grille.verifDiago1(2) == grille.joueur() || grille.verifDiago2(2) == grille.joueur() )
 			score -= 2;
 		else
 			score -= 1;
-		if ( grille.VerifDiago1(3) == grille.Robot() )
-			score += 10000;
-		else if ( grille.VerifDiago1(3) == grille.Joueur() )
-			score -= 1000;
-		if ( grille.VerifDiago2(2) == grille.Robot() )
-			score += 2;
-		else if ( grille.VerifDiago2(2) == grille.Joueur() )
-			score -= 2;
-		else
-			score -= 1;
-		if ( grille.VerifDiago2(3) == grille.Robot() )
-			score += 10000;
-		else if ( grille.VerifDiago2(3) == grille.Joueur() )
-			score -= 1000;
+		
+		if ( grille.verifDiago1(3) == grille.robot() || grille.verifDiago2(3) == grille.robot() )
+			return 1000;
+		else if ( grille.verifDiago1(3) == grille.joueur() || grille.verifDiago2(3) == grille.joueur() )
+			return -1000;
+
 		return score;
 	}
 }
