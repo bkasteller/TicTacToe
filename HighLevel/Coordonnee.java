@@ -11,18 +11,32 @@ public class Coordonnee {
 		this.y = y;
 	}
 	
+	public int getX()
+	{
+		return x;
+	}
+	
+	public int getY()
+	{
+		return y;
+	}
+	
 	@Override
 	public String toString()
 	{
-		return "(" + x + "; " + y + ")";
+		return "(" + x + ";" + y + ")";
 	}
 	
 	@Override
     public boolean equals(Object o) {
 		if(o == this)
+		{
 			return true;
+		}
 		if (!(o instanceof Coordonnee))
+		{
             return false;
+		}
         Coordonnee coordonnee = (Coordonnee) o;
         return coordonnee.toString().equals(toString());
     }

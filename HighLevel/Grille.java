@@ -3,7 +3,7 @@ package HighLevel;
 import java.util.HashMap;
 
 public class Grille implements Cloneable {
-	private HashMap<Coordonnee, Case> grille = new HashMap<Coordonnee, Case>();
+	private HashMap<Coordonnee, Object> grille = new HashMap<Coordonnee, Object>();
 	private int taille;
 	
 	public Grille(int taille)
@@ -18,13 +18,14 @@ public class Grille implements Cloneable {
 		{
 			for(int x = 0; x < getTaille(); x++)
 			{
-				Coordonnee coordonnee = new Coordonnee(x, y);
 				if(getTaille() == 3)
 				{
+					Coordonnee coordonnee = new Coordonnee(x, y);
 					grille.put(coordonnee, new Case(coordonnee, '.'));
-				}else if(getTaille() == 9)
+				}
+				else if(getTaille() == 9)
 				{
-					
+					grille.put(new Coordonnee(x / 3, y / 3), new Grille(3));
 				}
 			}
 		}
@@ -42,15 +43,25 @@ public class Grille implements Cloneable {
 	
 	public void afficher()
 	{
-		for (int y = 0; y < taille; y++)
+		System.out.print("  ");
+		for (int i = 0; i < getTaille(); i++)
 		{
-			for (int x = 0; x < taille; x++)
+			System.out.print(i + 1 + " ");
+		}
+		System.out.println();
+		for (int y = 0; y < getTaille(); y++)
+		{
+			for (int x = 0; x < getTaille(); x++)
 			{
-				System.out.print(grille.get(new Coordonnee(x, y)).getContenu());
+				if(x == 0)
+				{
+					System.out.print(y + 1 + " ");
+				}
+				Case c = (Case)grille.get(new Coordonnee(x, y));
+				System.out.print(c.getContenu() + " ");
 			}
 			System.out.println();
 		}
-		System.out.println();
 	}
 	
 	public boolean fin()
@@ -58,8 +69,26 @@ public class Grille implements Cloneable {
 		return false;
 	}
 	
-	public Grille jouer(int x, int y, char pion)
+	public Grille jouer(Coordonnee coordonnee, char pion)
 	{
+		int x = coordonnee.getX(), 
+			y = coordonnee.getY();
+		if(getTaille() == 3)
+		{
+			Case c = (Case)grille.get(coordonnee);
+			c.setContenu(pion);
+		}
+		else if(getTaille() == 9)
+		{
+			Grille g = (Grille)grille.get(new Coordonnee(x / 3, y / 3));
+			Case c = (Case)g.getGrille().get(new Coordonnee(x % 3, y % 3));
+			c.setContenu(pion);
+		}
 		return this;
+	}
+	
+	public HashMap<Coordonnee, Object> getGrille()
+	{
+		return grille;
 	}
 }

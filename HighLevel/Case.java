@@ -24,4 +24,9 @@ public class Case {
 	{
 		return contenu;
 	}
+	
+	public void setContenu(Object contenu)
+	{
+		this.contenu = contenu;
+	}
 }
