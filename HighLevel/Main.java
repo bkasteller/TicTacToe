@@ -22,8 +22,8 @@ public class Main {
 			if(kikiJoue)
 			{
 				System.out.println();
-				System.out.print("A vous, entrez x y : ");
-				coordonnee = new Coordonnee(sc.nextInt() - 1, sc.nextInt() - 1);
+				System.out.print("A vous Player1, entrez x y : ");
+				coordonnee = new Coordonnee(sc.nextInt(), sc.nextInt());
 				grille.jouer(coordonnee, 'X');
 				iRobot.reflechir(coordonnee);
 			}
@@ -37,6 +37,5 @@ public class Main {
 			kikiJoue = !kikiJoue;
 			tour-=-.5; // pour le style, car on aime être original.
 		}
-		
 	}
 }
