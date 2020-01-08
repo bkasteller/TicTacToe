@@ -47,7 +47,7 @@ public class Grille implements Cloneable {
 		for (int i = 0; i < getTaille(); i++)
 		{
 			System.out.print(i + " ");
-			if(getTaille() == 9 && i % 3 == 2)
+			if(i < getTaille() - 1 && i % 3 == 2)
 			{
 				System.out.print("  ");
 			}
@@ -78,7 +78,7 @@ public class Grille implements Cloneable {
 				}
 			}
 			System.out.println();
-			if(getTaille() == 9 && y < getTaille() - 1 && y % 3 == 2)
+			if(y < getTaille() - 1 && y % 3 == 2)
 			{
 				System.out.print(" -");
 				for(int i = 0; i < getTaille()-1; i++)

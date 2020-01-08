@@ -9,7 +9,7 @@ public class Main {
 		boolean kikiJoue = /* le joueur de type humanoïde commence (true/false) ? */ false;
 		float tour = 0;
 		Scanner sc = new Scanner(System.in);
-		Grille grille = new Grille(9); // 3 ou 9.
+		Grille grille = new Grille(3); // 3 ou 9.
 		BestBot iRobot = new BestBot((Grille)grille.clone());
 		while(!grille.fin())
 		{
@@ -33,7 +33,7 @@ public class Main {
 				//grille.jouer(coordonnee, 'O');
 			}
 			grille.afficher();
-			System.out.println(kikiJoue ? "Player1 a joué " + coordonnee : "iRobot a joué " + coordonnee + (detaille ? " | ExecutionTime : " + iRobot.getTemps() + "ms" : ""));
+			System.out.println(kikiJoue ? "Player1 a joué : " + coordonnee : "iRobot a joué : " + coordonnee + (detaille ? " | ExecutionTime : " + iRobot.getTemps() + "ms" : ""));
 			kikiJoue = !kikiJoue;
 			tour-=-.5; // pour le style, car on aime être original.
 		}
